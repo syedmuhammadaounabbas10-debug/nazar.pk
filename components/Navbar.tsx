@@ -2,29 +2,44 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ShoppingBag, X } from "lucide-react";
+import { Menu, ShoppingBag, X } from "lucide-react";
+
+const links = [
+  { href: "/#shop", label: "Shop" },
+  { href: "/#order", label: "How to Order" },
+  { href: "/#contact", label: "Contact" },
+];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#2A2421]/10 bg-[#F4EBE1]/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-20 items-center justify-between px-6">
-        <Link href="/" className="text-2xl font-serif font-bold tracking-tight text-[#2A2421]">
+      <div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:h-20 sm:gap-4 sm:px-6">
+        <Link
+          href="/"
+          className="shrink-0 text-xl font-serif font-bold tracking-tight text-[#2A2421] sm:text-2xl"
+        >
           Nazar<span className="text-[#C87D53]">.pk</span>
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
-          <Link href="#shop" className="text-sm font-medium text-[#2A2421]/80 transition-colors hover:text-[#C87D53]">Shop</Link>
-          <Link href="#order" className="text-sm font-medium text-[#2A2421]/80 transition-colors hover:text-[#C87D53]">How to Order</Link>
-          <Link href="#contact" className="text-sm font-medium text-[#2A2421]/80 transition-colors hover:text-[#C87D53]">Contact</Link>
+          {links.map(link => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-medium text-[#2A2421]/80 transition-colors hover:text-[#C87D53]"
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
-        <div className="flex items-center gap-4">
-          <a 
-            href="#shop" 
-            className="inline-flex items-center gap-2 rounded-full bg-[#2A2421] px-5 py-2 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53]"
+        <div className="flex items-center gap-2 sm:gap-3">
+          <a
+            href="/#shop"
+            className="hidden items-center gap-2 rounded-full bg-[#2A2421] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53] sm:inline-flex"
           >
             <ShoppingBag size={14} />
             Order Now
@@ -33,23 +48,43 @@ export default function Navbar() {
           {/* Mobile toggle */}
           <button
             type="button"
-            aria-label="Open menu"
+            aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            onClick={() => setOpen(!open)}
-            className="md:hidden inline-flex items-center justify-center rounded-lg p-2 text-[#2A2421]/80 hover:bg-[#2A2421]/5"
+            aria-controls="mobile-nav"
+            onClick={() => setOpen(prev => !prev)}
+            className="-mr-2 inline-flex h-11 w-11 items-center justify-center rounded-lg text-[#2A2421]/80 transition-colors hover:bg-[#2A2421]/5 active:scale-95 md:hidden"
           >
-            {open ? <X size={20} /> : <ShoppingBag size={20} />}
+            {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
       {/* Mobile nav */}
       {open && (
-        <nav className="md:hidden border-t border-[#2A2421]/10 bg-[#F4EBE1] px-6 py-4" aria-label="Mobile navigation">
-          <div className="flex flex-col gap-4">
-            <Link href="#shop" onClick={() => setOpen(false)} className="text-sm font-medium text-[#2A2421]/80 hover:text-[#C87D53]">Shop</Link>
-            <Link href="#order" onClick={() => setOpen(false)} className="text-sm font-medium text-[#2A2421]/80 hover:text-[#C87D53]">How to Order</Link>
-            <Link href="#contact" onClick={() => setOpen(false)} className="text-sm font-medium text-[#2A2421]/80 hover:text-[#C87D53]">Contact</Link>
+        <nav
+          id="mobile-nav"
+          className="border-t border-[#2A2421]/10 bg-[#F4EBE1] md:hidden"
+          aria-label="Mobile navigation"
+        >
+          <div className="container mx-auto flex flex-col px-4 py-2 sm:px-6">
+            {links.map(link => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className="-mx-2 flex min-h-[48px] items-center rounded-lg px-2 text-base font-medium text-[#2A2421]/80 transition-colors hover:bg-[#2A2421]/5 hover:text-[#C87D53]"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <a
+              href="/#shop"
+              onClick={() => setOpen(false)}
+              className="-mx-2 my-2 flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-[#2A2421] px-5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1]"
+            >
+              <ShoppingBag size={14} />
+              Order Now
+            </a>
           </div>
         </nav>
       )}
