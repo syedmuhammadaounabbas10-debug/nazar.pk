@@ -15,7 +15,7 @@ export default function Hero() {
           transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="pb-4"
         >
-          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#C87D53]/25 bg-[#C87D53]/10 px-4 py-1.5 text-[11px] font-semibold tracking-[.22em] uppercase text-[#C87D53]">
+          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#C87D53]/25 bg-[#C87D53]/10 px-4 py-1.5 text-[11px] font-semibold tracking-[.22em] normal-case text-[#C87D53]">
             Nazar.pk — Eyewear
           </p>
           

@@ -35,12 +35,12 @@ export default function OrderPanel({product}: {product?: Product}) {
         {(["name","phone","address","city"] as const).map(field => (
           <label key={field} className="grid gap-2 text-sm">
             <span className="capitalize text-[#2A2421]/70">{field === "phone" ? "WhatsApp / Phone" : field}</span>
-            <input required={field !== "address"} value={form[field]} onChange={e => setForm({...form,[field]:e.target.value})} className="rounded-lg border border-[#2A2421]/12 bg-transparent px-4 py-3 outline-none transition-colors focus:border-[#C87D53]" />
+            <input required={field !== "address"} value={form[field]} onChange={e => setForm({...form,[field]:e.target.value})} className="rounded-lg border border-[#2A2421]/30 bg-transparent px-4 py-3 outline-none transition-colors focus:border-[#C87D53]" />
           </label>
         ))}
         <label className="grid gap-2 text-sm">
           <span className="text-[#2A2421]/70">Payment method</span>
-          <select value={payment} onChange={e => setPayment(e.target.value as PaymentMethod)} className="rounded-lg border border-[#2A2421]/12 bg-transparent px-4 py-3 outline-none transition-colors focus:border-[#C87D53]">
+          <select value={payment} onChange={e => setPayment(e.target.value as PaymentMethod)} className="rounded-lg border border-[#2A2421]/30 bg-transparent px-4 py-3 outline-none transition-colors focus:border-[#C87D53]">
             {(["Easypaisa","Bank Transfer","Cash on Delivery"] as PaymentMethod[]).map(m => <option key={m}>{m}</option>)}
           </select>
         </label>
@@ -49,7 +49,7 @@ export default function OrderPanel({product}: {product?: Product}) {
           <p className="mt-1">{instructions}</p>
           {payment !== "Cash on Delivery" && <p className="mt-2 text-xs">Payment remains pending until Nazar.pk verifies it. Use WhatsApp to send proof.</p>}
         </div>
-        <label className="grid gap-2 text-sm"><span className="text-[#2A2421]/70">Additional notes</span><textarea value={form.notes} onChange={e => setForm({...form,notes:e.target.value})} rows={3} className="resize-none rounded-lg border border-[#2A2421]/12 bg-transparent px-4 py-3 outline-none transition-colors focus:border-[#C87D53]" /></label>
+        <label className="grid gap-2 text-sm"><span className="text-[#2A2421]/70">Additional notes</span><textarea value={form.notes} onChange={e => setForm({...form,notes:e.target.value})} rows={3} className="resize-none rounded-lg border border-[#2A2421]/30 bg-transparent px-4 py-3 outline-none transition-colors focus:border-[#C87D53]" /></label>
         <button disabled={!business.whatsapp} className="flex items-center justify-center gap-2 rounded-full bg-[#2A2421] px-5 py-3.5 text-sm font-medium text-[#F4EBE1] transition-colors hover:bg-[#C87D53] disabled:cursor-not-allowed disabled:opacity-40">
           <MessageCircle size={18}/> {business.whatsapp ? "Continue to WhatsApp" : "Add verified WhatsApp number in config"}
           <ArrowUpRight size={16}/>

@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, Mail } from "lucide-react";
+import { MessageCircle, Mail, Headset } from "lucide-react";
 import { business } from "@/lib/config";
 
 const supportItems = [
@@ -42,10 +42,12 @@ export default function Contact() {
         <span className="text-xs font-medium text-[#2A2421]/60 group-hover:underline">Send email →</span>
       </a>
 
-      <div className="rounded-2xl border border-[#2A2421]/10 bg-[#EAE1D7] p-6">
-        <p className="mb-3 text-xs font-semibold tracking-[.2em] uppercase text-[#C87D53]">Support</p>
-        <p className="text-lg font-serif font-medium text-[#2A2421]">We're here to help</p>
-        <ul className="mt-3 flex flex-col gap-2 text-sm text-[#2A2421]/70">
+      <div className="flex flex-col items-start gap-3 rounded-2xl border border-[#2A2421]/10 bg-[#EAE1D7] p-6">
+        <div className="rounded-full bg-[#C87D53]/15 p-3">
+          <Headset size={24} className="text-[#C87D53]" />
+        </div>
+        <p className="text-lg font-serif font-medium text-[#2A2421]">Customer Support</p>
+        <ul className="flex flex-col gap-2 text-sm text-[#2A2421]/70">
           {supportItems.map(item => (
             <li key={item} className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-[#C87D53]/50" />

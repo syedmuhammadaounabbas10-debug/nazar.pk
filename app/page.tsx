@@ -33,19 +33,17 @@ export default function Home() {
         </Section>
 
         <Section id="order" eyebrow="Order" title="Keep the checkout human.">
-          <div className="grid gap-8 md:grid-cols-[.85fr_1.15fr]">
-            <div className="flex flex-col justify-center">
-              <p className="text-sm leading-7 text-[#2A2421]/70">
-                Choose a frame, share your delivery details, select a payment
-                method, and send the order straight to Nazar.pk on WhatsApp.
+          <div className="mx-auto max-w-3xl">
+            <p className="text-sm leading-7 text-[#2A2421]/70">
+              Choose a frame, share your delivery details, select a payment
+              method, and send the order straight to Nazar.pk on WhatsApp.
+            </p>
+            <div className="mt-4 mb-8 border-l border-[#2A2421]/20 pl-5 text-sm leading-6 text-[#2A2421]/60">
+              <p>Payment states:</p>
+              <p className="text-[#2A2421]/50">
+                Pending → Proof submitted → Under verification → Verified →
+                Confirmed
               </p>
-              <div className="mt-8 border-l border-[#2A2421]/20 pl-5 text-sm leading-6 text-[#2A2421]/60">
-                <p>Payment states:</p>
-                <p className="text-[#2A2421]/50">
-                  Pending → Proof submitted → Under verification → Verified →
-                  Confirmed
-                </p>
-              </div>
             </div>
             <OrderPanel />
           </div>
