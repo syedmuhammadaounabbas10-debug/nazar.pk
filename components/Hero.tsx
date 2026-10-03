@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
@@ -29,19 +30,19 @@ export default function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-            <a
-              href="#shop"
+            <Link
+              href="/shop"
               className="brand-button-primary inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full px-8 py-3.5 text-sm font-medium shadow-md transition-transform active:scale-[.98] sm:w-auto"
             >
               Shop Eyewear
               <ArrowUpRight size={18} />
-            </a>
-            <a
-              href="#contact"
+            </Link>
+            <Link
+              href="/contact"
               className="brand-button-secondary inline-flex min-h-[48px] w-full items-center justify-center rounded-full px-8 py-3.5 text-sm font-medium transition-transform active:scale-[.98] sm:w-auto"
             >
               Contact Nazar.pk
-            </a>
+            </Link>
           </div>
         </motion.div>
 
@@ -55,21 +56,23 @@ export default function Hero() {
           <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-[#C87D53]/15 via-[#E2BC9B]/25 to-transparent blur-2xl -z-10" />
 
           <div className="hero-image-shadow relative w-full max-w-md overflow-hidden rounded-3xl border border-[#2A2421]/10 bg-[#EAE1D7]">
-            <img
-              src="/Images/products/image.png"
-              alt="Nazar.pk premium eyewear frame"
-              className="h-[280px] w-full object-cover object-center transition-transform duration-700 hover:scale-105 sm:h-[380px] md:h-[500px]"
-            />
+            <Link href="/products/classic-frame-glasses" className="block group">
+              <img
+                src="/Images/products/image.png"
+                alt="Nazar.pk premium eyewear frame"
+                className="h-[280px] w-full object-cover object-center transition-transform duration-700 group-hover:scale-105 sm:h-[380px] md:h-[500px]"
+              />
 
-            <div className="glass-card absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 rounded-2xl p-3 shadow-lg backdrop-blur-md sm:inset-x-5 sm:bottom-5 sm:p-4">
-              <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#C87D53] sm:text-xs">Featured Frame</p>
-                <p className="truncate text-xs font-medium text-[#2A2421] sm:text-sm">Classic Matte Eyeglasses</p>
+              <div className="glass-card absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 rounded-2xl p-3 shadow-lg backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-1 sm:inset-x-5 sm:bottom-5 sm:p-4">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[#C87D53] sm:text-xs">Featured Frame</p>
+                  <p className="truncate text-xs font-medium text-[#2A2421] sm:text-sm">Classic Frame Glasses</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-[#2A2421] px-3 py-1 text-xs font-semibold text-[#F4EBE1]">
+                  PKR 2,500
+                </span>
               </div>
-              <span className="shrink-0 rounded-full bg-[#2A2421] px-3 py-1 text-xs font-semibold text-[#F4EBE1]">
-                PKR 2,500
-              </span>
-            </div>
+            </Link>
           </div>
         </motion.div>
 

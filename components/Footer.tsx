@@ -6,12 +6,12 @@ import { business } from "@/lib/config";
 
 const quickLinks = [
   { href: "/", label: "Home" },
-  { href: "/#shop", label: "Shop" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/shop", label: "Shop" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const supportLinks = [
-  { href: "/#contact", label: "Contact Us" },
+  { href: "/contact", label: "Contact Us" },
   { href: `https://wa.me/${business.whatsapp}`, label: "WhatsApp", external: true },
   { href: `mailto:${business.email}`, label: "Email" },
 ];

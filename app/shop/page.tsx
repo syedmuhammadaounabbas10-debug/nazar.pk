@@ -75,7 +75,7 @@ export default function ShopPage() {
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`min-h-[40px] rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300 ${
+                    className={`min-h-[44px] rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300 ${
                       selectedCategory === cat
                         ? "bg-[#2A2421] text-[#F4EBE1]"
                         : "border border-[#2A2421]/10 bg-white/20 text-[#2A2421] hover:border-[#2A2421]/30 hover:bg-[#EAE1D7]"

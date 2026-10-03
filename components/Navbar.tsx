@@ -5,20 +5,20 @@ import { useState } from "react";
 import { Menu, ShoppingBag, X } from "lucide-react";
 
 const links = [
-  { href: "/#shop", label: "Shop" },
-  { href: "/#order", label: "How to Order" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#2A2421]/10 bg-[#F4EBE1]/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-[#2A2421]/10 bg-[#F4EBE1]/90 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:h-20 sm:gap-4 sm:px-6">
         <Link
           href="/"
-          className="shrink-0 text-xl font-serif font-bold tracking-tight text-[#2A2421] sm:text-2xl"
+          className="shrink-0 text-xl font-serif font-bold tracking-tight text-[#2A2421] transition-opacity hover:opacity-90 sm:text-2xl"
         >
           Nazar<span className="text-[#C87D53]">.pk</span>
         </Link>
@@ -37,13 +37,13 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <a
-            href="/#shop"
-            className="hidden items-center gap-2 rounded-full bg-[#2A2421] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53] sm:inline-flex"
+          <Link
+            href="/shop"
+            className="hidden items-center gap-2 rounded-full bg-[#2A2421] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53] active:scale-95 sm:inline-flex"
           >
             <ShoppingBag size={14} />
             Order Now
-          </a>
+          </Link>
 
           {/* Mobile toggle */}
           <button
@@ -63,28 +63,28 @@ export default function Navbar() {
       {open && (
         <nav
           id="mobile-nav"
-          className="border-t border-[#2A2421]/10 bg-[#F4EBE1] md:hidden"
+          className="border-t border-[#2A2421]/10 bg-[#F4EBE1] md:hidden animate-in fade-in slide-in-from-top-2 duration-200"
           aria-label="Mobile navigation"
         >
-          <div className="container mx-auto flex flex-col px-4 py-2 sm:px-6">
+          <div className="container mx-auto flex flex-col px-4 py-3 sm:px-6">
             {links.map(link => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="-mx-2 flex min-h-[48px] items-center rounded-lg px-2 text-base font-medium text-[#2A2421]/80 transition-colors hover:bg-[#2A2421]/5 hover:text-[#C87D53]"
+                className="-mx-2 flex min-h-[48px] items-center rounded-lg px-3 text-base font-medium text-[#2A2421]/85 transition-colors hover:bg-[#2A2421]/5 hover:text-[#C87D53]"
               >
                 {link.label}
               </Link>
             ))}
-            <a
-              href="/#shop"
+            <Link
+              href="/shop"
               onClick={() => setOpen(false)}
-              className="-mx-2 my-2 flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-[#2A2421] px-5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1]"
+              className="-mx-2 my-2 flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-[#2A2421] px-5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53]"
             >
               <ShoppingBag size={14} />
               Order Now
-            </a>
+            </Link>
           </div>
         </nav>
       )}

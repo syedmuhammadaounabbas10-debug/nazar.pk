@@ -176,8 +176,13 @@ export default async function ProductDetailsPage({ params }: Props) {
                 {product.reviews && product.reviews.length > 0 ? (
                   product.reviews.map((rev) => (
                     <div key={rev.id} className="rounded-xl border border-[#2A2421]/10 bg-[#EAE1D7]/50 p-6">
-                      <div className="flex items-center justify-between">
-                        <span className="font-serif font-semibold text-[#2A2421]">{rev.author}</span>
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-serif font-semibold text-[#2A2421]">{rev.author}</span>
+                          <span className="rounded-md bg-[#2A2421]/5 px-2 py-0.5 text-[10px] font-medium text-[#2A2421]/60">
+                            Sample/Demo Review
+                          </span>
+                        </div>
                         <span className="text-xs text-[#2A2421]/50">{rev.date}</span>
                       </div>
                       <div className="mt-2 flex items-center text-amber-500">
@@ -205,7 +210,7 @@ export default async function ProductDetailsPage({ params }: Props) {
                   Bought this frame? Share your experience with other Nazar.pk customers. You can submit reviews directly via our support channels.
                 </p>
                 <Link
-                  href="/#contact"
+                  href="/contact"
                   className="mt-6 inline-flex min-h-[44px] items-center gap-2 rounded-full border border-[#2A2421]/20 bg-white/20 px-5 text-xs font-semibold uppercase tracking-wider text-[#2A2421] hover:border-[#2A2421]/40"
                 >
                   Contact Support

@@ -23,6 +23,7 @@ export default function OrderFormClient({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0] || "");
   const [form, setForm] = useState({ name: "", phone: "", address: "", city: "", notes: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const message = useMemo(() => {
     return buildOrderMessage(
@@ -36,12 +37,18 @@ export default function OrderFormClient({ product }: { product: Product }) {
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!link) return;
+    if (!link || isSubmitting) return;
+
+    setIsSubmitting(true);
 
     // Open WhatsApp in a new tab
-    window.open(link, "_blank", "noopener,noreferrer");
+    try {
+      window.open(link, "_blank", "noopener,noreferrer");
+    } catch {
+      // In case popups are blocked, continue to confirmation
+    }
 
-    // Generate a random order number for the success screen
+    // Generate order reference number for confirmation screen
     const orderNum = `NZ-${Math.floor(100000 + Math.random() * 900000)}`;
 
     // Redirect to custom success page with query params
@@ -52,6 +59,7 @@ export default function OrderFormClient({ product }: { product: Product }) {
       qty: quantity.toString(),
       total: ((product.price || 0) * quantity).toString(),
       variant: selectedVariant,
+      payment,
       name: form.name,
       phone: form.phone,
       address: form.address,
@@ -125,12 +133,12 @@ export default function OrderFormClient({ product }: { product: Product }) {
 
           <button
             type="submit"
-            disabled={!business.whatsapp}
-            className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#2A2421] px-6 py-4 text-sm font-semibold uppercase tracking-wider text-[#F4EBE1] transition-all hover:bg-[#C87D53] active:scale-[.99] disabled:cursor-not-allowed disabled:opacity-40 shadow-lg shadow-[#2A2421]/15"
+            disabled={!business.whatsapp || isSubmitting}
+            className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#2A2421] px-6 py-4 text-sm font-semibold uppercase tracking-wider text-[#F4EBE1] transition-all hover:bg-[#C87D53] active:scale-[.99] disabled:cursor-not-allowed disabled:opacity-50 shadow-lg shadow-[#2A2421]/15"
           >
             <MessageCircle size={18} className="shrink-0" />
-            Place Order on WhatsApp
-            <ArrowUpRight size={16} className="shrink-0" />
+            {isSubmitting ? "Processing Order..." : "Place Order on WhatsApp"}
+            {!isSubmitting && <ArrowUpRight size={16} className="shrink-0" />}
           </button>
         </form>
       </div>
@@ -184,16 +192,18 @@ export default function OrderFormClient({ product }: { product: Product }) {
               <div className="flex items-center rounded-lg border border-[#2A2421]/20 bg-[#F4EBE1]">
                 <button
                   type="button"
+                  aria-label="Decrease quantity"
                   onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  className="px-3 py-1 text-sm font-semibold hover:bg-[#2A2421]/5 active:scale-95"
+                  className="flex h-10 w-10 items-center justify-center text-base font-semibold text-[#2A2421] hover:bg-[#2A2421]/5 active:scale-95"
                 >
                   -
                 </button>
-                <span className="px-3 text-sm font-bold text-[#2A2421]">{quantity}</span>
+                <span className="min-w-[2.5rem] text-center text-sm font-bold text-[#2A2421]">{quantity}</span>
                 <button
                   type="button"
+                  aria-label="Increase quantity"
                   onClick={() => setQuantity(q => q + 1)}
-                  className="px-3 py-1 text-sm font-semibold hover:bg-[#2A2421]/5 active:scale-95"
+                  className="flex h-10 w-10 items-center justify-center text-base font-semibold text-[#2A2421] hover:bg-[#2A2421]/5 active:scale-95"
                 >
                   +
                 </button>
