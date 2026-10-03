@@ -15,15 +15,32 @@ import {
   tapPress,
 } from "@/lib/motion";
 
+/**
+ * `match` lists the route families each item owns, so the active indicator
+ * stays accurate on sub-routes too (e.g. /products/* and /order/* are part of
+ * the Shop journey, so "Shop" stays marked while browsing them).
+ */
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/shop", label: "Shop" },
-  { href: "/contact", label: "Contact" },
+  { href: "/", label: "Home", match: ["/"] },
+  { href: "/shop", label: "Shop", match: ["/shop", "/products", "/order"] },
+  { href: "/contact", label: "Contact", match: ["/contact"] },
 ];
+
+function isLinkActive(pathname: string, match: string[]) {
+  return match.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+}
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  /*
+    During checkout the header's filled "Shop Now" CTA competes for attention
+    with the page's "Place Order on WhatsApp" action and nudges users out of the
+    funnel, so it is withheld on the whole `/order/*` flow. The nav's "Shop"
+    link already covers the same destination for anyone who wants it.
+  */
+  const isCheckout = pathname?.startsWith("/order") ?? false;
 
   // Close menu on route change
   useEffect(() => {
@@ -66,22 +83,31 @@ export default function Navbar() {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
           {links.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = isLinkActive(pathname, link.match);
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`relative py-2 text-sm font-medium transition-colors hover:text-[#C87D53] ${
-                  isActive ? "text-[#C87D53]" : "text-[#2A2421]/80"
+                className={`relative py-2 text-sm transition-colors hover:text-[#C87D53] ${
+                  isActive
+                    ? "font-semibold text-[#2A2421]"
+                    : "font-medium text-[#2A2421]/80"
                 }`}
               >
                 {link.label}
-                {/* Animated active indicator — slides between links */}
+                {/*
+                  Active indicator = accent underline (a non-colour cue, so the
+                  state does not rely on colour alone) that slides between links.
+                  The active label uses the full-contrast ink colour rather than
+                  the accent: #C87D53 on #F4EBE1 is only ~2.7:1, which would make
+                  the current page *less* legible than the inactive links.
+                */}
                 {isActive && (
                   <motion.span
                     layoutId="navbar-active-underline"
                     transition={indicatorSpring}
+                    aria-hidden="true"
                     className="absolute inset-x-0 -bottom-0.5 h-[2px] rounded-full bg-[#C87D53]"
                   />
                 )}
@@ -91,16 +117,18 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Desktop CTA */}
-          <MotionLink
-            href="/shop"
-            whileHover={hoverLift}
-            whileTap={tapPress}
-            className="hidden items-center gap-2 rounded-full bg-[#2A2421] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53] sm:inline-flex"
-          >
-            <ShoppingBag size={14} />
-            Shop Now
-          </MotionLink>
+          {/* Desktop CTA — withheld during checkout to keep focus on the order. */}
+          {!isCheckout && (
+            <MotionLink
+              href="/shop"
+              whileHover={hoverLift}
+              whileTap={tapPress}
+              className="hidden items-center gap-2 rounded-full bg-[#2A2421] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53] sm:inline-flex"
+            >
+              <ShoppingBag size={14} />
+              Shop Now
+            </MotionLink>
+          )}
 
           {/* Mobile toggle */}
           <motion.button
@@ -162,32 +190,48 @@ export default function Navbar() {
               animate="visible"
               className="container mx-auto flex flex-col px-4 py-4 sm:px-6"
             >
-              {links.map((link) => (
-                <motion.div key={link.href} variants={fadeUp}>
-                  <Link
-                    href={link.href}
+              {links.map((link) => {
+                const isActive = isLinkActive(pathname, link.match);
+                return (
+                  <motion.div key={link.href} variants={fadeUp}>
+                    <Link
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      aria-current={isActive ? "page" : undefined}
+                      className={`relative -mx-2 flex min-h-[52px] items-center rounded-xl px-4 text-base transition-colors hover:bg-[#2A2421]/5 hover:text-[#C87D53] ${
+                        isActive
+                          ? "font-semibold text-[#2A2421]"
+                          : "font-medium text-[#2A2421]/85"
+                      }`}
+                    >
+                      {/* Same non-colour active marker on mobile */}
+                      {isActive && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-[#C87D53]"
+                        />
+                      )}
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                );
+              })}
+              {!isCheckout && (
+                <motion.div variants={fadeUp} className="my-3 h-px bg-[#2A2421]/10" />
+              )}
+              {!isCheckout && (
+                <motion.div variants={fadeUp}>
+                  <MotionLink
+                    href="/shop"
                     onClick={() => setOpen(false)}
-                    aria-current={pathname === link.href ? "page" : undefined}
-                    className={`-mx-2 flex min-h-[52px] items-center rounded-xl px-4 text-base font-medium transition-colors hover:bg-[#2A2421]/5 hover:text-[#C87D53] ${
-                      pathname === link.href ? "text-[#C87D53]" : "text-[#2A2421]/85"
-                    }`}
+                    whileTap={tapPress}
+                    className="flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-[#2A2421] px-5 text-sm font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53]"
                   >
-                    {link.label}
-                  </Link>
+                    <ShoppingBag size={16} />
+                    Shop Now
+                  </MotionLink>
                 </motion.div>
-              ))}
-              <motion.div variants={fadeUp} className="my-3 h-px bg-[#2A2421]/10" />
-              <motion.div variants={fadeUp}>
-                <MotionLink
-                  href="/shop"
-                  onClick={() => setOpen(false)}
-                  whileTap={tapPress}
-                  className="flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-[#2A2421] px-5 text-sm font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53]"
-                >
-                  <ShoppingBag size={16} />
-                  Shop Now
-                </MotionLink>
-              </motion.div>
+              )}
             </motion.div>
           </motion.nav>
         )}

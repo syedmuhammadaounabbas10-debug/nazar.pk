@@ -123,30 +123,37 @@ export default function OrderFormClient({ product }: { product: Product }) {
           </label>
           </StaggerItem>
 
-          {/* Dynamic Instructions — animates when the payment method changes */}
+          {/*
+            Payment details. COD needs no account information, so it gets a
+            single plain helper line; the boxed card — which read as a second,
+            selectable payment option with its checkmark — is reserved for the
+            methods that actually surface account details.
+          */}
           <StaggerItem>
-          <div className="rounded-xl bg-[#F4EBE1] p-4 text-sm leading-6 text-[#2A2421]/70">
-            <div className="flex items-center gap-2 font-medium text-[#2A2421]">
-              <Check size={16} aria-hidden="true" className="shrink-0 text-[#C87D53]" />
-              {payment}
-            </div>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={payment}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.22, ease: premiumEase }}
-              >
-                <p className="mt-1 break-words">{instructions}</p>
-                {payment !== "Cash on Delivery" && (
-                  <p className="mt-2 text-xs">
-                    Payment remains pending until Nazar.pk manually verifies it. Use WhatsApp to send payment screenshot.
-                  </p>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+            {payment === "Cash on Delivery" ? (
+              <p className="text-xs leading-6 text-[#2A2421]/60">{instructions}</p>
+            ) : (
+              <div className="rounded-xl bg-[#F4EBE1] p-4 text-sm leading-6 text-[#2A2421]/70">
+                <div className="flex items-center gap-2 font-medium text-[#2A2421]">
+                  <Check size={16} aria-hidden="true" className="shrink-0 text-[#C87D53]" />
+                  {payment}
+                </div>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={payment}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.22, ease: premiumEase }}
+                  >
+                    <p className="mt-1 break-words">{instructions}</p>
+                    <p className="mt-2 text-xs">
+                      Payment remains pending until Nazar.pk manually verifies it. Use WhatsApp to send payment screenshot.
+                    </p>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            )}
           </StaggerItem>
 
           <StaggerItem>
@@ -167,7 +174,7 @@ export default function OrderFormClient({ product }: { product: Product }) {
             type="submit"
             disabled={!business.whatsapp || isSubmitting}
             whileTap={isSubmitting ? undefined : tapPress}
-            className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#2A2421] px-6 py-4 text-sm font-semibold uppercase tracking-wider text-[#F4EBE1] shadow-lg shadow-[#2A2421]/15 transition-colors duration-300 hover:bg-[#C87D53] disabled:cursor-not-allowed disabled:opacity-50"
+            className="group flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#2A2421] px-6 py-4 text-sm font-semibold uppercase tracking-wider text-[#F4EBE1] shadow-lg shadow-[#2A2421]/15 transition-colors duration-300 hover:bg-[#C87D53] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? (
               <LoaderCircle size={18} aria-hidden="true" className="shrink-0 animate-spin" />
@@ -175,7 +182,14 @@ export default function OrderFormClient({ product }: { product: Product }) {
               <MessageCircle size={18} aria-hidden="true" className="shrink-0" />
             )}
             {isSubmitting ? "Processing Order..." : "Place Order on WhatsApp"}
-            {!isSubmitting && <ArrowUpRight size={16} aria-hidden="true" className="shrink-0" />}
+            {!isSubmitting && (
+              <ArrowUpRight
+                size={16}
+                strokeWidth={2}
+                aria-hidden="true"
+                className="shrink-0 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            )}
           </motion.button>
           </StaggerItem>
           </Stagger>
@@ -304,8 +318,8 @@ export default function OrderFormClient({ product }: { product: Product }) {
 
         {/* Brand guarantee banner */}
         <div className="rounded-2xl border border-dashed border-[#C87D53]/30 bg-[#C87D53]/5 p-5 text-xs text-[#2A2421]/80">
-          <p className="font-bold uppercase tracking-wider text-[#C87D53] flex items-center gap-1.5 mb-2">
-            <Tag size={12} aria-hidden="true" /> Genuine Eyewear Promise
+          <p className="font-bold text-[#C87D53] flex items-center gap-1.5 mb-2">
+            <Tag size={12} aria-hidden="true" /> Genuine eyewear promise
           </p>
           <p>
             Every order is manually confirmed on WhatsApp by a human representative. Pay securely at delivery with Cash on Delivery or send proof for electronic methods.

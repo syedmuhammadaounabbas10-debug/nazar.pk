@@ -32,7 +32,9 @@ const socialClass =
 export default function Footer() {
   return (
     <footer className="border-t border-[#2A2421]/10 bg-[#F4EBE1]">
-      <div className="container mx-auto px-4 py-10 sm:px-6 md:py-16">
+      {/* `.fab-clearance` reserves space so the fixed WhatsApp button can never
+          sit permanently over the last row of content. */}
+      <div className="fab-clearance container mx-auto px-4 pt-10 sm:px-6 md:pt-16">
         <Stagger
           className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]"
           stagger={0.08}

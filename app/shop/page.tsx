@@ -50,8 +50,11 @@ export default function ShopPage() {
         <div className="border-b border-[#2A2421]/10 bg-gradient-to-b from-[#EAE1D7]/60 to-[#F4EBE1] px-4 py-10 text-center sm:px-6 sm:py-16 md:py-20">
           <Stagger className="mx-auto max-w-3xl" stagger={0.09} amount={0.3}>
             <StaggerItem>
+              {/* Short label: the heuristic reserves all-caps for brief labels,
+                  and this keeps the eyebrow consistent with the "Shop" /
+                  "Contact" eyebrows used elsewhere on Nazar.pk. */}
               <p className="text-xs font-bold uppercase tracking-[.2em] text-[#C87D53]">
-                Nazar.pk Catalog
+                Catalog
               </p>
             </StaggerItem>
             <StaggerItem>
@@ -97,10 +100,17 @@ export default function ShopPage() {
                 )}
               </div>
 
-              {/* Category Pills */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-                <span className="hidden shrink-0 items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#2A2421]/50 md:flex">
-                  <SlidersHorizontal size={13} aria-hidden="true" />
+              {/* Category Pills.
+                  role="group" + aria-label names the button group so its
+                  purpose is available to assistive tech, not just to sighted
+                  users reading the label. */}
+              <div
+                role="group"
+                aria-label="Filter products by category"
+                className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0"
+              >
+                <span className="hidden shrink-0 items-center gap-1.5 text-sm font-bold uppercase tracking-wider text-[#2A2421]/80 md:flex">
+                  <SlidersHorizontal size={16} aria-hidden="true" />
                   Filter:
                 </span>
                 {CATEGORIES.map((cat) => {
@@ -157,6 +167,15 @@ export default function ShopPage() {
               )}
             </AnimatePresence>
           </Reveal>
+
+          {/* Section heading for the results list.
+              Visually hidden so the design is unchanged, but it completes the
+              document outline: H1 ("Explore Our Collection") → H2 (this) → H3
+              (each product name in ProductCard) instead of skipping H1 → H3.
+              It also updates with the active filter so the outline stays true. */}
+          <h2 className="sr-only">
+            {selectedCategory === "All" ? "All Frames" : selectedCategory}
+          </h2>
 
           {/* Product Grid or Empty State */}
           {filteredProducts.length === 0 ? (

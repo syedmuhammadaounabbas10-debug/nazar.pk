@@ -1,13 +1,40 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { business } from "@/lib/config";
 import { premiumEase } from "@/lib/motion";
 
 export default function WhatsAppFab() {
+  const pathname = usePathname();
+
   const href = `https://wa.me/${business.whatsapp}?text=${encodeURIComponent(
     "Hello Nazar.pk, I would like to know more about your products."
   )}`;
+
+  /*
+    Positioning: bottom-right as the audit recommends, but pulled tighter into
+    the corner (12px + safe area) and slightly smaller on mobile so the fixed
+    overlay intrudes as little as possible on the product grid. The whole anchor
+    stays >=44px in both dimensions, so the tap target remains safe.
+
+    End-of-page clearance is handled by `.fab-clearance` (globals.css) on the
+    shared footer, and the hairline `ring` makes the button read as an overlay
+    layer rather than part of the page content it floats above.
+  */
+  const fabClass =
+    "group fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom,0px))] right-3 z-40 flex items-center gap-3 rounded-full bg-[#25D366] py-2.5 pl-2.5 pr-2.5 text-white shadow-lg shadow-black/25 ring-1 ring-black/5 transition-colors duration-300 hover:bg-[#1EBE5A] hover:pr-5 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 sm:bottom-6 sm:right-6 sm:py-3 sm:pl-3 sm:pr-3";
+
+  /*
+    Suppressed on the checkout flow (`/order/*`). That page keeps the Variant
+    selector and Quantity controls flush to the bottom-right of the Order
+    Summary, and a `position: fixed` anchor can never be guaranteed clear of
+    them at every scroll position — it ends up overlapping (and capturing taps
+    meant for) those controls. The order page already provides its own
+    prominent "Place Order on WhatsApp" action, so no support entry point is
+    lost.
+  */
+  if (pathname?.startsWith("/order")) return null;
 
   return (
     <motion.a
@@ -21,7 +48,7 @@ export default function WhatsAppFab() {
       transition={{ duration: 0.5, delay: 0.6, ease: premiumEase }}
       whileHover={{ scale: 1.04 }}
       whileTap={{ scale: 0.94 }}
-      className="group fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] right-4 z-40 flex items-center gap-3 rounded-full bg-[#25D366] py-3 pl-3 pr-3 text-white shadow-lg shadow-black/20 transition-colors duration-300 hover:bg-[#1EBE5A] hover:pr-5 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 sm:bottom-6 sm:right-6"
+      className={fabClass}
     >
       <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/15 sm:h-11 sm:w-11">
         <span className="absolute inset-0 rounded-full bg-[#25D366]/60 motion-safe:animate-ping" />

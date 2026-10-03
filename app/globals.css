@@ -170,3 +170,16 @@ h1, h2, h3 {
     transform: none !important;
   }
 }
+
+/* ------------------------------------------------------------------
+   FLOATING ACTION BUTTON CLEARANCE
+   ------------------------------------------------------------------
+   The WhatsApp button is `position: fixed`, so it floats above the page
+   content rather than occupying a row in the flow. Reserving matching
+   space at the end of the page (plus the device safe area) guarantees the
+   last row of real content — product CTAs, footer links — can always be
+   scrolled clear of it instead of being permanently covered.
+   Applied to the shared footer, so every route gets the clearance. */
+.fab-clearance {
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+}

@@ -74,6 +74,7 @@ export default async function OrderPage({ params }: Props) {
               >
                 <ArrowLeft
                   size={16}
+                  strokeWidth={2}
                   aria-hidden="true"
                   className="transition-transform duration-200 ease-out group-hover:-translate-x-0.5"
                 />
