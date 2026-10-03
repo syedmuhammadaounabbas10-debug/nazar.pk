@@ -1,118 +1,190 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ProductCard from "@/components/ProductCard";
+import ProductGrid from "@/components/ProductGrid";
+import Reveal from "@/components/motion/Reveal";
+import Stagger, { StaggerItem } from "@/components/motion/Stagger";
 import { products } from "@/lib/products";
+import { indicatorSpring } from "@/lib/motion";
 import { Search, X, SlidersHorizontal } from "lucide-react";
+
+const CATEGORIES = ["All", "Eyeglasses", "Sunglasses"] as const;
+type Category = (typeof CATEGORIES)[number];
 
 export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<"All" | "Eyeglasses" | "Sunglasses">("All");
+  const [selectedCategory, setSelectedCategory] = useState<Category>("All");
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
+      const q = searchQuery.toLowerCase();
       const matchesSearch =
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
+        !q ||
+        product.name.toLowerCase().includes(q) ||
+        product.category.toLowerCase().includes(q) ||
+        (product.description && product.description.toLowerCase().includes(q)) ||
+        (product.variants && product.variants.some((v) => v.toLowerCase().includes(q)));
 
-      const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
+      const matchesCategory =
+        selectedCategory === "All" || product.category === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, selectedCategory]);
 
+  function clearAll() {
+    setSearchQuery("");
+    setSelectedCategory("All");
+  }
+
+  const hasActiveFilters = searchQuery || selectedCategory !== "All";
+
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-[#F4EBE1] py-12 md:py-20">
-        <div className="container mx-auto px-4 sm:px-6">
-          
-          {/* Page Header */}
-          <div className="mb-10 text-center md:mb-16">
-            <p className="text-xs font-semibold uppercase tracking-[.2em] text-[#C87D53]">Nazar.pk Catalog</p>
-            <h1 className="mt-3 font-serif text-4xl font-medium text-[#2A2421] md:text-5xl lg:text-6xl">
-              Explore Our Collection
-            </h1>
-            <p className="mx-auto mt-4 max-w-xl text-base text-[#2A2421]/70">
-              Thoughtfully selected eyewear designed to combine timeless style, everyday comfort, and absolute visual clarity.
-            </p>
-          </div>
+      <main className="min-h-screen bg-[#F4EBE1]">
+        {/* Page Header */}
+        <div className="border-b border-[#2A2421]/10 bg-gradient-to-b from-[#EAE1D7]/60 to-[#F4EBE1] px-4 py-10 text-center sm:px-6 sm:py-16 md:py-20">
+          <Stagger className="mx-auto max-w-3xl" stagger={0.09} amount={0.3}>
+            <StaggerItem>
+              <p className="text-xs font-bold uppercase tracking-[.2em] text-[#C87D53]">
+                Nazar.pk Catalog
+              </p>
+            </StaggerItem>
+            <StaggerItem>
+              <h1 className="mt-3 font-serif text-3xl font-medium text-[#2A2421] sm:text-4xl md:text-5xl lg:text-6xl">
+                Explore Our Collection
+              </h1>
+            </StaggerItem>
+            <StaggerItem>
+              <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-[#2A2421]/65 sm:text-base">
+                Thoughtfully selected eyewear designed to combine timeless style, everyday comfort, and absolute visual clarity.
+              </p>
+            </StaggerItem>
+          </Stagger>
+        </div>
 
-          {/* Search and Filters controls */}
-          <div className="mx-auto mb-12 max-w-4xl space-y-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center">
-              
+        <div className="container mx-auto px-4 py-10 sm:px-6 sm:py-12 md:py-16">
+          {/* Search + Filter Bar */}
+          <Reveal y={14} className="mx-auto mb-8 max-w-4xl sm:mb-10 md:mb-14">
+            <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center">
+
               {/* Search Bar */}
               <div className="relative flex-1">
-                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2A2421]/40" />
+                <Search
+                  size={18}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#2A2421]/40"
+                />
                 <input
-                  type="text"
-                  placeholder="Search glasses, categories, or styles..."
+                  type="search"
+                  placeholder="Search glasses, sunglasses, styles..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full min-h-[48px] rounded-full border border-[#2A2421]/20 bg-[#EAE1D7]/50 py-3 pl-12 pr-12 text-sm text-[#2A2421] outline-none transition-colors placeholder:text-[#2A2421]/35 focus:border-[#C87D53] focus:ring-2 focus:ring-[#C87D53]/20"
+                  className="w-full min-h-[52px] rounded-full border border-[#2A2421]/20 bg-[#EAE1D7]/50 py-3 pl-12 pr-12 text-sm text-[#2A2421] outline-none transition-[border-color,box-shadow] duration-300 placeholder:text-[#2A2421]/35 focus:border-[#C87D53] focus:ring-2 focus:ring-[#C87D53]/20 sm:min-h-[48px]"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#2A2421]/50 hover:text-[#2A2421]"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full text-[#2A2421]/50 transition-colors hover:bg-[#2A2421]/10 hover:text-[#2A2421]"
                     aria-label="Clear search"
                   >
-                    <X size={16} />
+                    <X size={15} aria-hidden="true" />
                   </button>
                 )}
               </div>
 
-              {/* Category Filters */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="hidden text-xs font-semibold uppercase tracking-wider text-[#2A2421]/50 md:inline-flex items-center gap-1.5 mr-2">
-                  <SlidersHorizontal size={14} /> Filter:
+              {/* Category Pills */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+                <span className="hidden shrink-0 items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#2A2421]/50 md:flex">
+                  <SlidersHorizontal size={13} aria-hidden="true" />
+                  Filter:
                 </span>
-                {(["All", "Eyeglasses", "Sunglasses"] as const).map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`min-h-[44px] rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300 ${
-                      selectedCategory === cat
-                        ? "bg-[#2A2421] text-[#F4EBE1]"
-                        : "border border-[#2A2421]/10 bg-white/20 text-[#2A2421] hover:border-[#2A2421]/30 hover:bg-[#EAE1D7]"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+                {CATEGORIES.map((cat) => {
+                  const isActive = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      aria-pressed={isActive}
+                      className={`relative min-h-[44px] shrink-0 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-300 sm:px-5 ${
+                        isActive
+                          ? "text-[#F4EBE1]"
+                          : "border border-[#2A2421]/15 bg-white/30 text-[#2A2421] hover:border-[#2A2421]/30 hover:bg-[#EAE1D7]"
+                      }`}
+                    >
+                      {/* Active pill slides between categories */}
+                      {isActive && (
+                        <motion.span
+                          layoutId="shop-filter-pill"
+                          transition={indicatorSpring}
+                          aria-hidden="true"
+                          className="absolute inset-0 rounded-full bg-[#2A2421] shadow-sm"
+                        />
+                      )}
+                      <span className="relative z-10">{cat}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          </div>
 
-          {/* Product Grid */}
+            {/* Active filter summary */}
+            <AnimatePresence initial={false}>
+              {hasActiveFilters && (
+                <motion.div
+                  key="filter-summary"
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-3 flex items-center gap-3 text-sm text-[#2A2421]/60"
+                >
+                  <span>
+                    {filteredProducts.length} product
+                    {filteredProducts.length !== 1 ? "s" : ""} found
+                  </span>
+                  <button
+                    onClick={clearAll}
+                    className="text-[#C87D53] underline-offset-2 hover:underline"
+                  >
+                    Clear all filters
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Reveal>
+
+          {/* Product Grid or Empty State */}
           {filteredProducts.length === 0 ? (
-            <div className="mx-auto max-w-md rounded-2xl border border-dashed border-[#2A2421]/20 bg-[#EAE1D7]/30 p-12 text-center">
-              <p className="text-lg font-medium text-[#2A2421]/80">No products found</p>
-              <p className="mt-2 text-sm text-[#2A2421]/60">
-                We couldn't find anything matching your search criteria. Try adjusting your query or resetting filters.
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+              className="mx-auto max-w-sm rounded-2xl border border-dashed border-[#2A2421]/20 bg-[#EAE1D7]/30 p-10 text-center sm:max-w-md sm:p-12"
+            >
+              <p className="font-serif text-lg font-medium text-[#2A2421]/80 sm:text-xl">
+                No products found
+              </p>
+              <p className="mt-2 text-sm text-[#2A2421]/55">
+                We couldn&apos;t find anything matching your search. Try adjusting your query or resetting filters.
               </p>
               <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedCategory("All");
-                }}
-                className="mt-6 rounded-full bg-[#2A2421] px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53]"
+                onClick={clearAll}
+                className="mt-6 rounded-full bg-[#2A2421] px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#F4EBE1] transition-colors hover:bg-[#C87D53] active:scale-95"
               >
                 Reset Search
               </button>
-            </div>
+            </motion.div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <ProductGrid
+              products={filteredProducts}
+              className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 lg:grid-cols-3 xl:grid-cols-4"
+            />
           )}
-
         </div>
       </main>
       <Footer />

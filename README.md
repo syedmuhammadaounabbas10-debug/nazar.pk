@@ -74,11 +74,32 @@ Never put account credentials or secrets into client code. Public payment destin
 
 ## Accessibility
 
-The UI uses semantic controls, visible focus behavior from browser defaults, keyboard-operable navigation and avoids hover-only ordering actions on mobile.
+The UI uses semantic controls, keyboard-operable navigation, `aria-current` / `aria-pressed` / `aria-expanded` state on interactive controls, decorative icons marked `aria-hidden`, 44–52px minimum tap targets and a keyboard-only `:focus-visible` ring. Ordering actions never depend on hover.
+
+## Motion system
+
+All animation is built on the Framer Motion version already listed in `package.json` — no additional animation dependency was added.
+
+| File | Purpose |
+| --- | --- |
+| `lib/motion.ts` | Shared easing, durations, distances and variants (fade/slide, stagger, scale, indicator spring). |
+| `components/motion/MotionProvider.tsx` | One global `MotionConfig reducedMotion="user"`. |
+| `components/motion/Reveal.tsx` | Fade + rise when an element enters the viewport. |
+| `components/motion/Stagger.tsx` | Sequenced reveals for grids, lists and form sections. |
+| `components/motion/MotionLink.tsx` | Next.js `Link` with `whileHover` / `whileTap` micro-interactions. |
+| `app/template.tsx` | Per-route entrance fade (re-mounts on navigation). |
+
+Only `opacity` and `transform` are animated (GPU-friendly), travel distances stay small (≤ 24px), staggers stay ≤ 0.09s per item and there is no continuous/looping animation apart from the existing WhatsApp ping.
+
+If JavaScript is unavailable, the hidden initial state that motion elements ship in the server HTML is neutralised by a `<noscript>` rule in `app/layout.tsx` (mirrored by an `@media (scripting: none)` rule in `app/globals.css`), so the site stays fully readable and crawlable.
 
 ## Reduced motion
 
-Framer Motion animations are intentionally subtle. For a final production launch, add a project-wide `useReducedMotion` policy if stronger animation is introduced.
+Motion is honoured globally rather than per component:
+
+- `<MotionProvider>` sets `reducedMotion="user"`, so Framer Motion skips transform and layout animations while opacity fades keep content readable.
+- `app/globals.css` shortens CSS animations/transitions and disables smooth scrolling under `prefers-reduced-motion: reduce`.
+- The hero's scroll parallax is switched off entirely when reduced motion is requested.
 
 ## Deployment
 

@@ -1,6 +1,14 @@
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
 import "./globals.css";
 import WhatsAppFab from '@/components/WhatsAppFab';
+import MotionProvider from '@/components/motion/MotionProvider';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#F4EBE1',
+};
 
 export const metadata: Metadata = {
   title: 'Nazar.pk — Premium Eyewear & Sunglasses in Pakistan',
@@ -41,14 +49,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        {/* Google Fonts preconnect + stylesheet */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* No-JS fallback: motion elements ship their hidden state in the SSR
+            HTML, so force them back to their final readable state when
+            JavaScript is unavailable. */}
+        <noscript>
+          <style>{`[style*="opacity:0"]{opacity:1 !important;transform:none !important}`}</style>
+        </noscript>
       </head>
       <body>
-        {children}
-        <WhatsAppFab />
+        {/* Global animation preferences (respects prefers-reduced-motion) */}
+        <MotionProvider>
+          {children}
+          <WhatsAppFab />
+        </MotionProvider>
       </body>
     </html>
   );

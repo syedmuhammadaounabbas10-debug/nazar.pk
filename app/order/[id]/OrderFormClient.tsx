@@ -2,10 +2,23 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, Check, MessageCircle, Tag, Truck } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowUpRight,
+  Check,
+  LoaderCircle,
+  MessageCircle,
+  Minus,
+  Plus,
+  Tag,
+  Truck,
+} from "lucide-react";
 import { business, PaymentMethod } from "@/lib/config";
 import { paymentInstructions, getWhatsAppLink, buildOrderMessage } from "@/lib/order";
 import { Product } from "@/lib/products";
+import Stagger, { StaggerItem } from "@/components/motion/Stagger";
+import Reveal from "@/components/motion/Reveal";
+import { premiumEase, tapPress } from "@/lib/motion";
 
 const fields = [
   { name: "name", label: "Full Name", type: "text", placeholder: "e.g. Syed Muhammad", required: true, autoComplete: "name" },
@@ -75,10 +88,11 @@ export default function OrderFormClient({ product }: { product: Product }) {
       {/* Left: Customer Information Form */}
       <div className="rounded-2xl border border-[#2A2421]/10 bg-[#EAE1D7]/40 p-5 sm:p-6 md:p-8">
         <h2 className="font-serif text-2xl font-medium text-[#2A2421] mb-6">Shipping Details</h2>
-        <form onSubmit={submit} className="grid gap-5">
-          
+        <form onSubmit={submit}>
+          <Stagger className="grid gap-5" stagger={0.05} amount={0.05}>
           {fields.map(field => (
-            <label key={field.name} className="grid gap-2 text-sm">
+            <StaggerItem key={field.name}>
+            <label className="grid gap-2 text-sm">
               <span className="font-medium text-[#2A2421]/70">{field.label}</span>
               <input
                 type={field.type}
@@ -91,8 +105,10 @@ export default function OrderFormClient({ product }: { product: Product }) {
                 className={inputClass}
               />
             </label>
+            </StaggerItem>
           ))}
 
+          <StaggerItem>
           <label className="grid gap-2 text-sm">
             <span className="font-medium text-[#2A2421]/70">Payment method</span>
             <select
@@ -105,21 +121,35 @@ export default function OrderFormClient({ product }: { product: Product }) {
               ))}
             </select>
           </label>
+          </StaggerItem>
 
-          {/* Dynamic Instructions */}
+          {/* Dynamic Instructions — animates when the payment method changes */}
+          <StaggerItem>
           <div className="rounded-xl bg-[#F4EBE1] p-4 text-sm leading-6 text-[#2A2421]/70">
             <div className="flex items-center gap-2 font-medium text-[#2A2421]">
-              <Check size={16} className="shrink-0 text-[#C87D53]" />
+              <Check size={16} aria-hidden="true" className="shrink-0 text-[#C87D53]" />
               {payment}
             </div>
-            <p className="mt-1 break-words">{instructions}</p>
-            {payment !== "Cash on Delivery" && (
-              <p className="mt-2 text-xs">
-                Payment remains pending until Nazar.pk manually verifies it. Use WhatsApp to send payment screenshot.
-              </p>
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={payment}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.22, ease: premiumEase }}
+              >
+                <p className="mt-1 break-words">{instructions}</p>
+                {payment !== "Cash on Delivery" && (
+                  <p className="mt-2 text-xs">
+                    Payment remains pending until Nazar.pk manually verifies it. Use WhatsApp to send payment screenshot.
+                  </p>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
+          </StaggerItem>
 
+          <StaggerItem>
           <label className="grid gap-2 text-sm">
             <span className="font-medium text-[#2A2421]/70">Additional notes (optional)</span>
             <textarea
@@ -130,21 +160,30 @@ export default function OrderFormClient({ product }: { product: Product }) {
               className="w-full resize-none rounded-lg border border-[#2A2421]/30 bg-[#F4EBE1] px-4 py-3 text-base text-[#2A2421] outline-none transition-colors placeholder:text-[#2A2421]/35 focus:border-[#C87D53] focus:ring-2 focus:ring-[#C87D53]/25"
             />
           </label>
+          </StaggerItem>
 
-          <button
+          <StaggerItem>
+          <motion.button
             type="submit"
             disabled={!business.whatsapp || isSubmitting}
-            className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#2A2421] px-6 py-4 text-sm font-semibold uppercase tracking-wider text-[#F4EBE1] transition-all hover:bg-[#C87D53] active:scale-[.99] disabled:cursor-not-allowed disabled:opacity-50 shadow-lg shadow-[#2A2421]/15"
+            whileTap={isSubmitting ? undefined : tapPress}
+            className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#2A2421] px-6 py-4 text-sm font-semibold uppercase tracking-wider text-[#F4EBE1] shadow-lg shadow-[#2A2421]/15 transition-colors duration-300 hover:bg-[#C87D53] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <MessageCircle size={18} className="shrink-0" />
+            {isSubmitting ? (
+              <LoaderCircle size={18} aria-hidden="true" className="shrink-0 animate-spin" />
+            ) : (
+              <MessageCircle size={18} aria-hidden="true" className="shrink-0" />
+            )}
             {isSubmitting ? "Processing Order..." : "Place Order on WhatsApp"}
-            {!isSubmitting && <ArrowUpRight size={16} className="shrink-0" />}
-          </button>
+            {!isSubmitting && <ArrowUpRight size={16} aria-hidden="true" className="shrink-0" />}
+          </motion.button>
+          </StaggerItem>
+          </Stagger>
         </form>
       </div>
 
       {/* Right: Order Summary */}
-      <div className="space-y-6">
+      <Reveal y={18} delay={0.12} amount={0.08} className="space-y-6">
         <div className="rounded-2xl border border-[#2A2421]/10 bg-[#EAE1D7] p-5 sm:p-6">
           <h2 className="font-serif text-xl font-medium text-[#2A2421] mb-5">Order Summary</h2>
 
@@ -190,23 +229,39 @@ export default function OrderFormClient({ product }: { product: Product }) {
             <div className="flex items-center justify-between text-sm">
               <span className="text-[#2A2421]/60">Quantity:</span>
               <div className="flex items-center rounded-lg border border-[#2A2421]/20 bg-[#F4EBE1]">
-                <button
+                <motion.button
                   type="button"
                   aria-label="Decrease quantity"
                   onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  className="flex h-10 w-10 items-center justify-center text-base font-semibold text-[#2A2421] hover:bg-[#2A2421]/5 active:scale-95"
+                  whileTap={{ scale: 0.9 }}
+                  className="flex h-10 w-10 items-center justify-center text-base font-semibold text-[#2A2421] transition-colors hover:bg-[#2A2421]/5"
                 >
-                  -
-                </button>
-                <span className="min-w-[2.5rem] text-center text-sm font-bold text-[#2A2421]">{quantity}</span>
-                <button
+                  <Minus size={14} aria-hidden="true" />
+                </motion.button>
+                <span className="relative min-w-[2.5rem] text-center text-sm font-bold text-[#2A2421]">
+                  {/* Number swaps with a tiny slide so changes feel responsive */}
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span
+                      key={quantity}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.18, ease: premiumEase }}
+                      className="inline-block"
+                    >
+                      {quantity}
+                    </motion.span>
+                  </AnimatePresence>
+                </span>
+                <motion.button
                   type="button"
                   aria-label="Increase quantity"
                   onClick={() => setQuantity(q => q + 1)}
-                  className="flex h-10 w-10 items-center justify-center text-base font-semibold text-[#2A2421] hover:bg-[#2A2421]/5 active:scale-95"
+                  whileTap={{ scale: 0.9 }}
+                  className="flex h-10 w-10 items-center justify-center text-base font-semibold text-[#2A2421] transition-colors hover:bg-[#2A2421]/5"
                 >
-                  +
-                </button>
+                  <Plus size={14} aria-hidden="true" />
+                </motion.button>
               </div>
             </div>
           </div>
@@ -215,22 +270,34 @@ export default function OrderFormClient({ product }: { product: Product }) {
           <div className="space-y-3 pt-5 text-sm">
             <div className="flex justify-between">
               <span className="text-[#2A2421]/60">Subtotal:</span>
-              <span className="font-semibold text-[#2A2421]">
+              <motion.span
+                key={product.price != null ? product.price * quantity : "na"}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, ease: premiumEase }}
+                className="font-semibold text-[#2A2421]"
+              >
                 {product.price != null ? `PKR ${(product.price * quantity).toLocaleString()}` : "—"}
-              </span>
+              </motion.span>
             </div>
             <div className="flex justify-between">
               <span className="text-[#2A2421]/60">Delivery:</span>
               <span className="font-semibold text-emerald-600 flex items-center gap-1">
-                <Truck size={14} /> FREE
+                <Truck size={14} aria-hidden="true" /> FREE
               </span>
             </div>
             
             <div className="flex justify-between border-t border-[#2A2421]/15 pt-3 text-base font-bold">
               <span className="text-[#2A2421]">Order Total:</span>
-              <span className="text-[#C87D53]">
+              <motion.span
+                key={product.price != null ? product.price * quantity : "na"}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, ease: premiumEase, delay: 0.05 }}
+                className="text-[#C87D53]"
+              >
                 {product.price != null ? `PKR ${(product.price * quantity).toLocaleString()}` : "—"}
-              </span>
+              </motion.span>
             </div>
           </div>
         </div>
@@ -238,13 +305,13 @@ export default function OrderFormClient({ product }: { product: Product }) {
         {/* Brand guarantee banner */}
         <div className="rounded-2xl border border-dashed border-[#C87D53]/30 bg-[#C87D53]/5 p-5 text-xs text-[#2A2421]/80">
           <p className="font-bold uppercase tracking-wider text-[#C87D53] flex items-center gap-1.5 mb-2">
-            <Tag size={12} /> Genuine Eyewear Promise
+            <Tag size={12} aria-hidden="true" /> Genuine Eyewear Promise
           </p>
           <p>
             Every order is manually confirmed on WhatsApp by a human representative. Pay securely at delivery with Cash on Delivery or send proof for electronic methods.
           </p>
         </div>
-      </div>
+      </Reveal>
 
     </div>
   );

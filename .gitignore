@@ -4,3 +4,8 @@ out
 .env*
 .DS_Store
 npm-debug.log*
+*.tsbuildinfo
+dev.err
+dev.log
+test_dev.log
+
